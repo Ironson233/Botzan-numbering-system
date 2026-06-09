@@ -388,6 +388,7 @@ h1 {
 
 input, select, textarea {
   width: 100%;
+  min-width: 0;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: white;
@@ -478,6 +479,10 @@ label span {
 
 .compact-inline {
   grid-template-columns: repeat(4, minmax(0, 1fr)) 100px;
+}
+
+.ecn-form {
+  grid-template-columns: repeat(4, minmax(0, 1fr)) 110px;
 }
 
 .user-form {
