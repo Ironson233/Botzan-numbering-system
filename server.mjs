@@ -1158,11 +1158,31 @@ async function handleApi(req, res, url) {
   if (req.method === "GET" && url.pathname === "/api/audit") {
     requirePermission(currentUser, "audit:read");
     const userMap = Object.fromEntries(db.users.map((user) => [user.id, publicUser(user)]));
+    const recordMap = Object.fromEntries((db.records || []).map((record) => [record.id, record]));
+    const ecnMap = Object.fromEntries((db.ecns || []).map((ecn) => [ecn.id, ecn]));
+    const snMap = Object.fromEntries((db.serialNumbers || []).map((sn) => [sn.id, sn]));
+    const linkMap = Object.fromEntries((db.bomLinks || []).map((link) => [link.id, link]));
+    const auditTarget = (item) => {
+      const record = recordMap[item.recordId];
+      if (record) return { type: "图纸编号", label: `${record.number} / ${record.version || ""}`, title: record.title || "" };
+      const source = recordMap[item.sourceRecordId];
+      if (source) return { type: "源版本", label: `${source.number} / ${source.version || ""}`, title: source.title || "" };
+      const ecn = ecnMap[item.ecnId];
+      if (ecn) return { type: "ECN", label: ecn.number, title: ecn.title || "" };
+      const sn = snMap[item.snId];
+      if (sn) return { type: "SN", label: sn.number, title: sn.model || "" };
+      const link = linkMap[item.linkId];
+      if (link) return { type: "BOM", label: `${link.parentNumber} -> ${link.childNumber}`, title: link.usage || "" };
+      if (item.targetUsername) return { type: "账号", label: item.targetUsername, title: "" };
+      if (item.groupName) return { type: "分类", label: `${item.groupName}${item.code ? ` / ${item.code}` : ""}`, title: item.item?.name || "" };
+      if (item.number) return { type: "编号", label: item.number, title: item.version || "" };
+      return { type: "系统", label: "-", title: "" };
+    };
     const limit = Math.min(500, Math.max(20, Number(url.searchParams.get("limit") || 100)));
     const audit = [...db.audit]
       .sort((a, b) => String(b.at || "").localeCompare(String(a.at || "")))
       .slice(0, limit)
-      .map((item) => ({ ...item, user: userMap[item.userId] || null }));
+      .map((item) => ({ ...item, user: userMap[item.userId] || null, target: auditTarget(item) }));
     return send(res, 200, audit);
   }
 

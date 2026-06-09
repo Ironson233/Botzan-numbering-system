@@ -726,14 +726,44 @@ function renderTrace() {
 }
 
 function renderAudit() {
+  const actionLabels = {
+    login: "登录",
+    create_user: "创建账号",
+    update_user: "修改账号",
+    update_config: "修改系统配置",
+    add_group_item: "新增分类",
+    update_group_item: "修改分类",
+    delete_group_item: "删除分类",
+    create_record: "新建编号",
+    update_record: "修改记录",
+    delete_record: "删除记录",
+    create_revision: "创建修订申请",
+    submit_record: "提交审批",
+    withdraw_record: "撤回审批",
+    approve_record: "批准受控",
+    reject_record: "退回审批",
+    create_ecn: "创建 ECN",
+    add_attachment: "上传附件",
+    delete_attachment: "删除附件",
+    create_sn: "创建 SN",
+    create_bom_link: "创建 BOM 关联",
+  };
+  const hiddenDetailKeys = new Set(["id", "user", "userId", "at", "action", "target", "recordId", "sourceRecordId", "ecnId", "snId", "linkId", "targetUserId"]);
+  const detailText = (item) => Object.entries(item)
+    .filter(([key, value]) => !hiddenDetailKeys.has(key) && value !== "" && value !== undefined && value !== null)
+    .map(([key, value]) => `${key}: ${typeof value === "object" ? JSON.stringify(value) : value}`)
+    .join("；");
   $("#auditRows").innerHTML = state.audit.map((item) => `
     <tr>
       <td>${item.at ? new Date(item.at).toLocaleString() : ""}</td>
       <td>${escapeHtml(item.user?.username || "")}</td>
       <td>${escapeHtml(item.user?.roleName || "")}</td>
-      <td>${escapeHtml(item.action || "")}</td>
-      <td>${escapeHtml(item.number || item.recordId || item.groupName || item.ecnId || item.snId || item.linkId || "")}</td>
-      <td>${escapeHtml(Object.entries(item).filter(([key]) => !["id", "user", "userId", "at", "action"].includes(key)).map(([key, value]) => `${key}: ${typeof value === "object" ? JSON.stringify(value) : value}`).join("；"))}</td>
+      <td>${escapeHtml(actionLabels[item.action] || item.action || "")}</td>
+      <td>
+        <strong>${escapeHtml(item.target?.label || item.number || "-")}</strong>
+        <small>${escapeHtml([item.target?.type, item.target?.title].filter(Boolean).join(" · "))}</small>
+      </td>
+      <td>${escapeHtml(detailText(item))}</td>
     </tr>
   `).join("") || `<tr><td colspan="6">暂无日志</td></tr>`;
 }
