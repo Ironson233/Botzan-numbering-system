@@ -360,9 +360,24 @@ h1 {
   vertical-align: top;
 }
 
-.data-table td:first-child {
+.number-cell,
+.code-cell {
   font-family: Consolas, monospace;
   white-space: nowrap;
+}
+
+.numeric-cell,
+.date-cell {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.number-cell {
+  color: #111827;
+}
+
+.code-cell {
+  color: #334155;
 }
 
 .status {

@@ -204,10 +204,10 @@ function renderDashboard() {
 
   $("#recentRows").innerHTML = state.records.slice(0, 8).map((record) => `
     <tr>
-      <td>${escapeHtml(record.number)}</td>
+      <td class="number-cell">${escapeHtml(record.number)}</td>
       <td>${escapeHtml(record.title)}</td>
       <td><span class="status">${record.statusLabel || record.status}</span></td>
-      <td>${escapeHtml(record.version)}</td>
+      <td class="code-cell">${escapeHtml(record.version)}</td>
     </tr>
   `).join("") || `<tr><td colspan="4">暂无记录</td></tr>`;
 }
@@ -292,12 +292,12 @@ function recordKindLabel(record) {
 function renderApprovals() {
   $("#approvalRows").innerHTML = state.approvals.map((record) => `
     <tr>
-      <td>${escapeHtml(record.number)}</td>
+      <td class="number-cell">${escapeHtml(record.number)}</td>
       <td>${escapeHtml(record.title)}</td>
       <td>${recordKindLabel(record)}</td>
       <td>${escapeHtml(record.owner || record.createdBy || "")}</td>
-      <td>${escapeHtml(record.sourceNumber || "")}</td>
-      <td>${new Date(record.updatedAt).toLocaleString()}</td>
+      <td class="number-cell">${escapeHtml(record.sourceNumber || "")}</td>
+      <td class="date-cell">${new Date(record.updatedAt).toLocaleString()}</td>
       <td>
         <button data-open="${record.id}">详情</button>
         ${hasPermission("records:approve") ? `<button class="primary" data-approve="${record.id}">批准</button>` : ""}
@@ -429,14 +429,14 @@ async function toggleUser(id) {
 function renderRecords() {
   $("#recordRows").innerHTML = state.records.map((record) => `
     <tr>
-      <td>${escapeHtml(record.number)}</td>
+      <td class="number-cell">${escapeHtml(record.number)}</td>
       <td>${escapeHtml(record.title)}</td>
-      <td>${record.rule} ${ruleName(record.rule)}</td>
-      <td>${escapeHtml(record.version)}</td>
+      <td><span class="code-cell">${record.rule}</span> ${ruleName(record.rule)}</td>
+      <td class="code-cell">${escapeHtml(record.version)}</td>
       <td><span class="status">${record.statusLabel || record.status}</span></td>
       <td>${escapeHtml(record.owner || "")}</td>
-      <td>${record.attachments?.length || 0}</td>
-      <td>${new Date(record.updatedAt).toLocaleString()}</td>
+      <td class="numeric-cell">${record.attachments?.length || 0}</td>
+      <td class="date-cell">${new Date(record.updatedAt).toLocaleString()}</td>
       <td><button data-open="${record.id}">详情</button></td>
     </tr>
   `).join("") || `<tr><td colspan="9">暂无记录</td></tr>`;
@@ -449,7 +449,7 @@ function renderCategories() {
   const rows = groupOptions(groupName);
   $("#categoryRows").innerHTML = rows.map((item) => `
     <tr>
-      <td>${escapeHtml(item.code)}</td>
+      <td class="code-cell">${escapeHtml(item.code)}</td>
       <td><input data-code="${escapeHtml(item.code)}" data-key="name" value="${escapeHtml(item.name || "")}"></td>
       <td><input data-code="${escapeHtml(item.code)}" data-key="nameEn" value="${escapeHtml(item.nameEn || "")}"></td>
       <td><input data-code="${escapeHtml(item.code)}" data-key="description" value="${escapeHtml(item.description || "")}"></td>
@@ -715,13 +715,13 @@ async function rejectRecordById(id) {
 
 function renderTrace() {
   $("#snRows").innerHTML = state.trace.serialNumbers.map((item) => `
-    <tr><td>${escapeHtml(item.number)}</td><td>${escapeHtml(item.model)}</td><td>${escapeHtml(item.yearMonth)}</td><td>${escapeHtml(item.customer || "")}</td><td>${escapeHtml(item.relatedRecordNumber || "")}</td></tr>
+    <tr><td class="number-cell">${escapeHtml(item.number)}</td><td class="code-cell">${escapeHtml(item.model)}</td><td class="numeric-cell">${escapeHtml(item.yearMonth)}</td><td>${escapeHtml(item.customer || "")}</td><td class="number-cell">${escapeHtml(item.relatedRecordNumber || "")}</td></tr>
   `).join("") || `<tr><td colspan="5">暂无 SN 记录</td></tr>`;
   $("#bomRows").innerHTML = state.trace.bomLinks.map((item) => `
-    <tr><td>${escapeHtml(item.parentNumber)}</td><td>${escapeHtml(item.childNumber)}</td><td>${escapeHtml(item.quantity)}</td><td>${escapeHtml(item.usage || "")}</td></tr>
+    <tr><td class="number-cell">${escapeHtml(item.parentNumber)}</td><td class="number-cell">${escapeHtml(item.childNumber)}</td><td class="numeric-cell">${escapeHtml(item.quantity)}</td><td>${escapeHtml(item.usage || "")}</td></tr>
   `).join("") || `<tr><td colspan="4">暂无 BOM 关联</td></tr>`;
   $("#ecnRows").innerHTML = state.trace.ecns.map((item) => `
-    <tr><td>${escapeHtml(item.number)}</td><td>${escapeHtml(item.recordNumber)}</td><td>${escapeHtml(item.title)}</td><td>${escapeHtml(item.reason || "")}</td><td>${escapeHtml(item.impact || "")}</td><td>${escapeHtml(item.status)}</td></tr>
+    <tr><td class="number-cell">${escapeHtml(item.number)}</td><td class="number-cell">${escapeHtml(item.recordNumber)}</td><td>${escapeHtml(item.title)}</td><td>${escapeHtml(item.reason || "")}</td><td>${escapeHtml(item.impact || "")}</td><td><span class="status">${escapeHtml(item.status)}</span></td></tr>
   `).join("") || `<tr><td colspan="6">暂无 ECN 记录</td></tr>`;
 }
 
@@ -755,12 +755,12 @@ function renderAudit() {
     .join("；");
   $("#auditRows").innerHTML = state.audit.map((item) => `
     <tr>
-      <td>${item.at ? new Date(item.at).toLocaleString() : ""}</td>
-      <td>${escapeHtml(item.user?.username || "")}</td>
+      <td class="date-cell">${item.at ? new Date(item.at).toLocaleString() : ""}</td>
+      <td class="code-cell">${escapeHtml(item.user?.username || "")}</td>
       <td>${escapeHtml(item.user?.roleName || "")}</td>
       <td>${escapeHtml(actionLabels[item.action] || item.action || "")}</td>
       <td>
-        <strong>${escapeHtml(item.target?.label || item.number || "-")}</strong>
+        <strong class="number-cell">${escapeHtml(item.target?.label || item.number || "-")}</strong>
         <small>${escapeHtml([item.target?.type, item.target?.title].filter(Boolean).join(" · "))}</small>
       </td>
       <td>${escapeHtml(detailText(item))}</td>
