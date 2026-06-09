@@ -1,0 +1,16 @@
+node_modules/
+
+# Local runtime data. Do not commit real company records, user hashes, or uploads.
+data/db.json
+data/uploads/
+
+# Logs and local environment files
+*.log
+.env
+.env.*
+
+# Editor and OS files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
